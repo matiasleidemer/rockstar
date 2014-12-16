@@ -12,6 +12,7 @@ require 'yaml'
 require 'rockstar/base'
 require 'rockstar/version'
 
+require 'rockstar/pagination'
 require 'rockstar/album'
 require 'rockstar/artist'
 require 'rockstar/chart'

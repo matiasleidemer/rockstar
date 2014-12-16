@@ -58,6 +58,8 @@
 #   (62.160%) Christina Aguilera
 module Rockstar
   class Artist < Base
+    include Pagination
+
     attr_accessor :name, :mbid, :listenercount, :playcount, :rank, :url, :thumbnail
     attr_accessor :summary, :content, :images, :count, :streamable, :tags
     attr_accessor :chartposition, :autocorrect
@@ -130,28 +132,28 @@ module Rockstar
       self
     end
 
-    def events(force=false)
-      get_instance("artist.getEvents", :events, :event, {:artist => @name}, force)
+    def events(params={})
+      get_instance("artist.getEvents", :events, :event, *api_params(params))
     end
 
-    def similar(force=false)
-      get_instance("artist.getSimilar", :similar, :artist, {:artist => @name}, force)
+    def similar(params={})
+      get_instance("artist.getSimilar", :similar, :artist, *api_params(params))
     end
 
-    def top_fans(force=false)
-      get_instance("artist.getTopFans", :top_fans, :user, {:artist => @name}, force)
+    def top_fans(params={})
+      get_instance("artist.getTopFans", :top_fans, :user, *api_params(params))
     end
 
-    def top_tracks(force=false)
-      get_instance("artist.getTopTracks", :top_tracks, :track, {:artist => @name}, force)
+    def top_tracks(params={})
+      get_instance("artist.getTopTracks", :top_tracks, :track, *api_params(params))
     end
 
-    def top_albums(force=false)
-      get_instance("artist.getTopAlbums", :top_albums, :album, {:artist => @name}, force)
+    def top_albums(params={})
+      get_instance("artist.getTopAlbums", :top_albums, :album, *api_params(params))
     end
 
-    def top_tags(force=false)
-      get_instance("artist.getTopTags", :top_tags, :tag, {:artist => @name}, force)
+    def top_tags(params={})
+      get_instance("artist.getTopTags", :top_tags, :tag, *api_params(params))
     end
 
     def image(which=:medium)
@@ -180,6 +182,16 @@ module Rockstar
       end
 
       images
+    end
+
+    private
+
+    def api_params(params={})
+      force  = params.fetch :force, true
+      params = { artist: @name }.merge pagination_params(params)
+      params.merge!(autocorrect: 1) if @autocorrect
+
+      [params, force]
     end
   end
 end
